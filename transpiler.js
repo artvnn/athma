@@ -11,8 +11,19 @@ function transpile(inputs, result) {
 		mkdirp.sync(buildSourceDir);
 		ncp(inputs.source, buildSourceDir, function(err) {
 			if(err) result.reject(err); else {
+				inputs.components.forEach(function (component, idx){
+					mkdirp.sync(path.join(inputs.build, (idx < 10 ? '0' : '') + (idx+1) + '_' + component))
+				});
+				mkdirp.sync(path.join(inputs.build, ((inputs.components.length+1) < 10 ? '0' : '') + (inputs.components.length+1) + '_target'));
 				mkdirp.sync(inputs.target);
-				result.resolve();
+
+				/* TODO: Tech Debt
+				 * Note: If result is resolved immediately, often the files are not accessible, hence a delay is necessary here.
+				 * May be its a problem of ncp, this needs to be fixed.
+				 * This delay causes some of the tests to show a warning that they are running for too long! */
+				setTimeout(function() {
+					result.resolve();
+				}, 10);
 			}
 		});
 	} catch (err) {

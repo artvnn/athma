@@ -8,7 +8,7 @@ var chai = require('chai'),
 	fs = require('fs'),
 	clone = function (obj) {
 		return JSON.parse(JSON.stringify(obj));
-	}
+	};
 
 describe('Athma Transpiler:', function () {
 	var testDir = path.normalize(path.join(__dirname, './test')),
@@ -84,16 +84,39 @@ describe('Athma Transpiler:', function () {
 			expect(buildFolderExists).to.equal(true);
 		});
 	});
-	// it('should copy all source files into the build folder, in a sub-folder called "00_source"', function () {
-	// 	var options = clone(optionsOriginal);
-	// 	return transpiler(options).then(function () {
-	// 		var buildSourceFolder = path.join(buildDir, '00_source'),
-	// 			sourceFile = path.join(buildSourceFolder, 'main.tm'),
-	// 			sourceFileExists = fs.existsSync(sourceFile);
-	// 		console.log(sourceFile, fs.existsSync(sourceFile));
-	// 		expect(sourceFileExists).to.equal(true);
-	// 	});
-	// });
+	it('should copy all source files into the build folder, in a sub-folder called "00_source"', function () {
+		var options = clone(optionsOriginal);
+		return transpiler(options).then(function () {
+			var sourceFile = path.join(buildDir, '00_source', 'main.tm'),
+				sourceFileExists = fs.existsSync(sourceFile);
+			expect(sourceFileExists).to.equal(true);
+		});
+	});
+	it('should create one folder for each of the components', function () {
+		var options = clone(optionsOriginal);
+		options.components =  [
+			'c1',
+			'c2',
+			'c3'
+		];
+		return transpiler(options).then(function () {
+			var folderNotFound = false;
+			options.components.forEach(function (component, idx) {
+				var folder = path.join(buildDir, (idx < 10 ? '0' : '') + (idx+1) + '_' + component),
+					folderExists = fs.existsSync(folder);
+				if(!folderExists) folderNotFound = true;
+			});
+			expect(folderNotFound).to.equal(false);
+		});
+	});
+	it('should create target folder inside build folder', function () {
+		var options = clone(optionsOriginal);
+		return transpiler(options).then(function () {
+			var targetDir = path.join(buildDir, ((options.components.length+1) < 10 ? '0' : '') + (options.components.length+1) + '_target'),
+				targetDirExists = fs.existsSync(targetDir);
+			expect(targetDirExists).to.equal(true);
+		});
+	});
 	after(function () {
 		rmdir(testDir);
 	});
