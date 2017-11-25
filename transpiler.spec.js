@@ -1,123 +1,155 @@
-var chai = require('chai'),
-	expect = chai.expect,
-	transpiler = require('./transpiler'),
-	path = require('path'),
-	mkdirp = require('mkdirp'),
-	rmdir = require('rmdir'),
-	assert = chai.assert,
-	fs = require('fs'),
-	clone = function (obj) {
-		return JSON.parse(JSON.stringify(obj));
-	};
+const utils = require('./utils');
+const assert = require("chai").assert;
+const expect = require("chai").expect;
+const mkdirp = require('mkdirp');
+const path = require('path');
+const fs = require('fs');
+const rmdir = utils.rmdir;
+const clone = utils.clone;
+const transpiler = require('./transpiler');
 
-describe('Athma Transpiler:', function () {
-	var testDir = path.normalize(path.join(__dirname, './test')),
+require('./test_setup.js');
+
+describe('Athma Transpiler:', () => {
+	let testDir = path.normalize(path.join(__dirname, './test')),
 		sourceDir = path.join(testDir, 'source'),
 		buildDir = path.join(testDir, 'build'),
 		targetDir = path.join(testDir, 'target'),
 		optionsOriginal = {
 			source: sourceDir,
 			target: targetDir,
-			components: [],
+			components: ['test'],
 			build: buildDir
 		};
-	before(function () {
-		mkdirp.sync(sourceDir);
-		fs.writeFileSync(path.join(sourceDir, 'main.tm'), '/* main.tm */');
-	});
-	function promiseResolvedOk(result) {
-		assert(true);
-	}
-	function promiseResolvedError(result) {
-		throw 'Unexpected result: ' + result;
-	}
-	it('should throw error when no options are given', function () {
-		return transpiler().then(promiseResolvedError, function (err) {
-			expect(err).to.equal('No inputs given');
+	beforeEach(() => {
+		return new Promise(function (resolve, reject) {
+			rmdir(testDir).then(
+				() => {
+					try {
+						mkdirp.sync(sourceDir);
+						fs.writeFileSync(path.join(sourceDir, 'main.tm'), '/* main.tm */');
+						resolve();
+					} catch (err) {
+						reject(err);
+					}
+				},
+				e => {
+					reject(e);
+				}
+			);
 		});
 	});
-	it('should throw error when no source folder is specified', function () {
-		var options = clone(optionsOriginal);
+	it('should throw error when no options are given', () => {
+		return transpiler().should.be.rejectedWith('No inputs given');
+	});
+	it('should throw error when no source folder is specified', () => {
+		let options = clone(optionsOriginal);
 		delete options.source;
-		return transpiler(options).then(promiseResolvedError, function (err) {
-			expect(err).to.equal('No source folder is specified');
-		});
+		return transpiler(options).should.be.rejectedWith('No source folder is specified');
 	});
-	it('should throw error when source folder does not exist', function () {
-		var options = clone(optionsOriginal);
+	it('should throw error when source folder does not exist', () => {
+		let options = clone(optionsOriginal);
 		options.source = 'blah';
-		return transpiler(options).then(promiseResolvedError, function (err) {
-			expect(err).to.equal('Source folder does not exist');
-		});
+		return transpiler(options).should.be.rejectedWith('Source folder does not exist');
 	});
-	it('should not throw error when source folder exists', function () {
-		var options = clone(optionsOriginal);
-		return transpiler(options).then(promiseResolvedOk, function (err) {
-			expect(err).to.not.equal('Source folder does not exist');
-		});
+	it('should not throw error when source folder exists', () => {
+		let options = clone(optionsOriginal);
+		return transpiler(options).should.not.be.rejectedWith('Source folder does not exist');
 	});
-	it('should throw error when no target folder is specified', function () {
-		var options = clone(optionsOriginal);
-		delete options.target;
-		return transpiler(options).then(promiseResolvedError, function (err) {
-			expect(err).to.equal('No target folder is specified');
-		});
-	});
-	it('should throw error when no components are specified', function () {
-		var options = clone(optionsOriginal);
+	it('should throw error when no components are specified', () => {
+		let options = clone(optionsOriginal);
 		delete options.components;
-		return transpiler(options).then(promiseResolvedError, function (err) {
-			expect(err).to.equal('No components are specified');
-		});
+		return transpiler(options).should.be.rejectedWith('No components are specified');
 	});
-	it('should create target folder', function () {
-		var options = clone(optionsOriginal);
-		return transpiler(options).then(function () {
-			var targetFolderExists = fs.existsSync(targetDir);
-			expect(targetFolderExists).to.equal(true);
-		});
+	it('should delete build folder if it already exists', function () {
+		let options = clone(optionsOriginal);
+		mkdirp.sync(buildDir);
+		let testFile = path.join(buildDir, 'test.txt');
+		fs.writeFileSync(testFile, 'Testing, please ignore.');
+		return transpiler(options).then(
+			() => {
+				expect(fs.existsSync(testFile)).to.equal(false);
+			}
+		);
 	});
-	it('should create build folder', function () {
-		var options = clone(optionsOriginal);
-		return transpiler(options).then(function () {
-			var buildFolderExists = fs.existsSync(buildDir);
-			expect(buildFolderExists).to.equal(true);
-		});
+	it('should create build folder', () => {
+		let options = clone(optionsOriginal);
+		return transpiler(options).then(
+			() => {
+				expect(fs.existsSync(buildDir)).to.equal(true);
+			}
+		);
 	});
-	it('should copy all source files into the build folder, in a sub-folder called "00_source"', function () {
-		var options = clone(optionsOriginal);
-		return transpiler(options).then(function () {
-			var sourceFile = path.join(buildDir, '00_source', 'main.tm'),
-				sourceFileExists = fs.existsSync(sourceFile);
-			expect(sourceFileExists).to.equal(true);
-		});
+	it('should copy all source files into the build folder, in a sub-folder called "00_source"', () => {
+		let options = clone(optionsOriginal);
+		return transpiler(options).then(
+			() => {
+				expect(fs.existsSync(path.join(buildDir, '00_source', 'main.tm'))).to.equal(true);
+			}
+		);
 	});
-	it('should create one folder for each of the components', function () {
-		var options = clone(optionsOriginal);
-		options.components =  [
-			'c1',
-			'c2',
-			'c3'
+	it('should create one folder for each of the components', () => {
+		let options = clone(optionsOriginal);
+		options.components = [
+			'test',
+			'test',
+			'test'
 		];
-		return transpiler(options).then(function () {
-			var folderNotFound = false;
-			options.components.forEach(function (component, idx) {
-				var folder = path.join(buildDir, (idx < 10 ? '0' : '') + (idx+1) + '_' + component),
-					folderExists = fs.existsSync(folder);
-				if(!folderExists) folderNotFound = true;
-			});
-			expect(folderNotFound).to.equal(false);
+		return transpiler(options).then(
+			() => {
+				let folderNotFound = false;
+				options.components.forEach(function (component, idx) {
+					let folder = path.join(buildDir, (idx < 10 ? '0' : '') + (idx + 1) + '_' + component);
+					if (!fs.existsSync(folder)) folderNotFound = true;
+				});
+				expect(folderNotFound).to.equal(false);
+			}
+		);
+	});
+	it('should invoke the component and pass input and output paths to it', () => {
+		let options = clone(optionsOriginal);
+		return transpiler(options).then(
+			() => {
+				let sourceFile = path.join(buildDir, '00_source', 'main.tm'),
+					sourceFileExists = fs.existsSync(sourceFile),
+					targetFile = path.join(buildDir, '01_test', 'main.tm'),
+					targetFileExists = fs.existsSync(targetFile);
+				expect(sourceFileExists && targetFileExists).to.equal(true);
+			}
+		);
+	});
+	it('should throw error when no target folder is specified', () => {
+		let options = clone(optionsOriginal);
+		delete options.target;
+		return transpiler(options).should.be.rejectedWith('No target folder is specified');
+	});
+	it('should create target folder', () => {
+		let options = clone(optionsOriginal);
+		return transpiler(options).then(
+			() => {
+				let targetFolderExists = fs.existsSync(targetDir);
+				expect(targetFolderExists).to.equal(true);
+			}
+		);
+	});
+	it('should copy the contents of the last component folder into the target folder', () => {
+		let options = clone(optionsOriginal);
+		return transpiler(options).then(() => {
+			let targetFile = path.join(targetDir, 'main.tm'),
+				targetFileExists = fs.existsSync(targetFile);
+			expect(targetFileExists).to.equal(true);
 		});
 	});
-	it('should create target folder inside build folder', function () {
-		var options = clone(optionsOriginal);
-		return transpiler(options).then(function () {
-			var targetDir = path.join(buildDir, ((options.components.length+1) < 10 ? '0' : '') + (options.components.length+1) + '_target'),
-				targetDirExists = fs.existsSync(targetDir);
-			expect(targetDirExists).to.equal(true);
+	afterEach(() => {
+		return new Promise(function (resolve, reject) {
+			rmdir(testDir).then(
+				() => {
+					resolve();
+				},
+				e => {
+					reject(e);
+				}
+			);
 		});
-	});
-	after(function () {
-		rmdir(testDir);
 	});
 });
