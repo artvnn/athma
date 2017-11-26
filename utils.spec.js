@@ -1,6 +1,6 @@
 const utils = require('./utils');
-const assert = require("chai").assert;
-const expect = require("chai").expect;
+const assert = require('chai').assert;
+const expect = require('chai').expect;
 const mkdirp = require('mkdirp');
 const path = require('path');
 const fs = require('fs');
@@ -40,7 +40,7 @@ describe('Utils:', () => {
 			expect(JSON.stringify(input)).to.deep.equal(JSON.stringify(output));
 		});
 	});
-	describe('deepCopy', () => {
+	describe('deepCopy:', () => {
 		let deepCopy = utils.deepCopy;
 		it('should copy the folder tree', () => {
 			let sourceFolder = path.join(__dirname, 'test', 'f1');

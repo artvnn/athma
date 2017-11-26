@@ -1,6 +1,6 @@
 const utils = require('./utils');
-const assert = require("chai").assert;
-const expect = require("chai").expect;
+const assert = require('chai').assert;
+const expect = require('chai').expect;
 const mkdirp = require('mkdirp');
 const path = require('path');
 const fs = require('fs');
@@ -18,7 +18,7 @@ describe('Athma Transpiler:', () => {
 		optionsOriginal = {
 			source: sourceDir,
 			target: targetDir,
-			components: ['test'],
+			components: [ 'mock' ],
 			build: buildDir
 		};
 	beforeEach(() => {
@@ -91,9 +91,9 @@ describe('Athma Transpiler:', () => {
 	it('should create one folder for each of the components', () => {
 		let options = clone(optionsOriginal);
 		options.components = [
-			'test',
-			'test',
-			'test'
+			'mock',
+			'mock',
+			'mock'
 		];
 		return transpiler(options).then(
 			() => {
@@ -112,7 +112,7 @@ describe('Athma Transpiler:', () => {
 			() => {
 				let sourceFile = path.join(buildDir, '00_source', 'main.tm'),
 					sourceFileExists = fs.existsSync(sourceFile),
-					targetFile = path.join(buildDir, '01_test', 'main.tm'),
+					targetFile = path.join(buildDir, '01_mock', 'main.tm'),
 					targetFileExists = fs.existsSync(targetFile);
 				expect(sourceFileExists && targetFileExists).to.equal(true);
 			}
