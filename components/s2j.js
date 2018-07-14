@@ -17,7 +17,7 @@ module.exports = (inputPath, outputPath) => {
 		try {
 			let tmFile = fs.readFileSync(path.join(inputPath, 'main.tm'), 'utf8');
 			tmFile = embedFiles(tmFile);
-			fs.writeFileSync(path.join(inputPath, 'main_embedded.json'), tmFile);
+			fs.writeFileSync(path.join(inputPath, 'main_embedded.tm'), tmFile);
 			fs.writeFileSync(path.join(outputPath, 'main.json'), JSON.stringify(tmParser.parse(tmFile)[0], null, 2));
 			resolve();
 		} catch (err) {
