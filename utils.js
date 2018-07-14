@@ -5,7 +5,7 @@ const ncp = require('ncp');
 module.exports = {
 	rmdir: folder => {
 		return new Promise((resolve, reject) => {
-			if(fs.existsSync(folder)) {
+			if (fs.existsSync(folder)) {
 				rmdir(folder, e => {
 					e ? reject(e) : resolve();
 				});
@@ -18,7 +18,7 @@ module.exports = {
 		return JSON.parse(JSON.stringify(o));
 	},
 	deepCopy: (source, target) => {
-		return new Promise( (resolve, reject) => {
+		return new Promise((resolve, reject) => {
 			ncp(source, target, e => {
 				e ? reject(e) : resolve();
 			});

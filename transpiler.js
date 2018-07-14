@@ -5,7 +5,7 @@ const rmdir = utils.rmdir;
 const mkdirp = require('mkdirp');
 const deepCopy = utils.deepCopy;
 
-module.exports = function (inputs) {
+module.exports = function(inputs) {
 	return new Promise((resolve, reject) => {
 		if (!inputs) {
 			reject('No inputs given');
@@ -43,7 +43,10 @@ function transpile(inputs) {
 						// Create Build Folder
 						mkdirp.sync(inputs.build);
 						// Copy the inputs files into build folder
-						let buildSourceDir = path.join(inputs.build, '00_source');
+						let buildSourceDir = path.join(
+							inputs.build,
+							'00_source'
+						);
 						mkdirp.sync(buildSourceDir);
 						deepCopy(inputs.source, buildSourceDir).then(
 							() => {
@@ -72,7 +75,13 @@ function transpile(inputs) {
 					return;
 				}
 				let component = inputs.components[componentIndex],
-					componentFolder = path.join(inputs.build, (componentIndex < 10 ? '0' : '') + (componentIndex + 1) + '_' + component),
+					componentFolder = path.join(
+						inputs.build,
+						(componentIndex < 10 ? '0' : '') +
+							(componentIndex + 1) +
+							'_' +
+							component
+					),
 					componentModule = require('./components/' + component);
 				mkdirp.sync(componentFolder);
 				componentModule(componentInputFolder, componentFolder).then(
@@ -80,7 +89,9 @@ function transpile(inputs) {
 						componentInputFolder = componentFolder;
 						process.nextTick(processComponents, componentIndex + 1);
 					},
-					e => { reject(e); }
+					e => {
+						reject(e);
+					}
 				);
 			} catch (err) {
 				reject(err);
@@ -91,10 +102,20 @@ function transpile(inputs) {
 			try {
 				// Create target folder and copy results of the last component into it
 				mkdirp.sync(inputs.target);
-				var componentFolder = path.join(inputs.build, (inputs.components.length - 1 < 10 ? '0' : '') + (inputs.components.length) + '_' + inputs.components[inputs.components.length - 1]);
+				var componentFolder = path.join(
+					inputs.build,
+					(inputs.components.length - 1 < 10 ? '0' : '') +
+						inputs.components.length +
+						'_' +
+						inputs.components[inputs.components.length - 1]
+				);
 				deepCopy(componentFolder, inputs.target).then(
-					() => { resolve() },
-					e => { reject(e); }
+					() => {
+						resolve();
+					},
+					e => {
+						reject(e);
+					}
 				);
 			} catch (err) {
 				reject(err);
