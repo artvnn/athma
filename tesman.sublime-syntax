@@ -27,9 +27,6 @@ contexts:
       scope: punctuation.definition.comment.begin.tesman
       push: comment
 
-    - match: \b[^\s]+\b
-      scope: variable.function.tesman
-
   embed:
     - meta_scope: meta.preprocessor.tesman
     - match: '>>'
@@ -52,19 +49,20 @@ contexts:
 
   list_start:
     - meta_scope: meta.paragraph.tesman
-    - match: \b[^\s]+\b
-      scope: variable.language.tesman
+    - match: \S*
+      scope: keyword.control.flow.tesman
       set: list
     - match: '\)'
       scope: punctuation.section.brackets.end.tesman
       pop: true
 
   list:
-    - meta_scope: meta.paragraph.tesman
-    - include: main
+    - match: \b\S*\b
+      scope: variable.function.tesman
     - match: '\)'
       scope: punctuation.section.brackets.end.tesman
       pop: true
+    - include: main
 
   comment:
     - meta_scope: comment.block.tesman
