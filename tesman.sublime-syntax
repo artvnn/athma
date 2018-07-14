@@ -48,20 +48,21 @@ contexts:
       pop: true
 
   list_start:
-    - meta_scope: meta.paragraph.tesman
-    - match: \b\S*\b
+    - meta_scope: meta.sequence.tesman
+    - match: '\)'
+      scope: punctuation.section.brackets.end.tesman
+      set: list
+    - match: '[\w=\*\/\-><&%\$#@!~`\.\?\\\|\[\]]*'
       scope: keyword.control.flow.tesman
       set: list
-    - match: '\)'
-      scope: punctuation.section.brackets.end.tesman
-      pop: true
 
   list:
-    - match: \b\S*\b
-      scope: variable.function.tesman
+    - meta_scope: meta.paragraph.tesman
     - match: '\)'
       scope: punctuation.section.brackets.end.tesman
       pop: true
+    - match: '[\w=\*\/\-><&%\$#@!~`\.\?\\\|\[\]]*'
+      scope: variable.function.tesman
     - include: main
 
   comment:
