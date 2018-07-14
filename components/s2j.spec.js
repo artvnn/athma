@@ -25,7 +25,7 @@ describe('S-Expression to JSON convertor: ', () => {
 		return s2j(inputPath, outputPath).then(
 			() => {
 				let fileData = fs.readFileSync(path.join(outputPath, 'main.json'));
-				expect(JSON.stringify(JSON.parse(fileData))).to.equal(JSON.stringify(["a", ["b", ["c"]]]));
+				expect(JSON.stringify(JSON.parse(fileData))).to.equal(JSON.stringify(['a', ['b', ['c']]]));
 			}
 		);
 	});
@@ -39,7 +39,7 @@ describe('S-Expression to JSON convertor: ', () => {
 		return s2j(inputPath, outputPath).then(
 			() => {
 				let fileData = fs.readFileSync(path.join(outputPath, 'main.json'));
-				expect(JSON.stringify(JSON.parse(fileData))).to.equal(JSON.stringify(["a", ["x", "y"], ["b", ["c"]]]));
+				expect(JSON.stringify(JSON.parse(fileData))).to.equal(JSON.stringify(['a', ['x', 'y'], ['b', ['c']]]));
 			}
 		);
 	});
@@ -54,7 +54,7 @@ describe('S-Expression to JSON convertor: ', () => {
 		return s2j(inputPath, outputPath).then(
 			() => {
 				let fileData = fs.readFileSync(path.join(outputPath, 'main.json'));
-				expect(JSON.stringify(JSON.parse(fileData))).to.equal(JSON.stringify(["a", ["x", ["p", "q"], "y"], ["b", ["c"]]]));
+				expect(JSON.stringify(JSON.parse(fileData))).to.equal(JSON.stringify(['a', ['x', ['p', 'q'], 'y'], ['b', ['c']]]));
 			}
 		);
 	});

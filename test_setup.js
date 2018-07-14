@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 // Adapted from: https://github.com/domenic/chai-as-promised/blob/master/test/support/setup.js
 
 const chai = require('chai');
@@ -9,9 +9,9 @@ const assert = chai.assert;
 chai.should();
 chai.use(chaiAsPromised);
 
-process.on("unhandledRejection", () => {
+process.on('unhandledRejection', () => {
 	// Do nothing; we test these all the time.
 });
-process.on("rejectionHandled", () => {
+process.on('rejectionHandled', () => {
 	// Do nothing; we test these all the time.
 });
