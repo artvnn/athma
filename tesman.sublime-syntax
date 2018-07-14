@@ -49,7 +49,7 @@ contexts:
 
   list_start:
     - meta_scope: meta.paragraph.tesman
-    - match: \S*
+    - match: \b\S*\b
       scope: keyword.control.flow.tesman
       set: list
     - match: '\)'
