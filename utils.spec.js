@@ -58,4 +58,46 @@ describe('Utils:', () => {
 			rmdir(path.join(__dirname, 'test'));
 		});
 	});
+	describe('first:', () => {
+		let first = utils.first;
+		it('should return first element from list', () => {
+			expect(first([1, 2, 3])).to.equal(1);
+			expect(first(['Manoj', 'Kumar'])).to.equal('Manoj');
+		});
+		it('should return null if list is null', () => {
+			expect(first(null)).to.equal(null);
+			expect(first(undefined)).to.equal(null);
+		});
+		it('should return null if list is empty', () => {
+			expect(first([])).to.equal(null);
+		});
+	});
+	describe('rest:', () => {
+		let rest = utils.rest;
+		it('should return the elements other than the first one', () => {
+			expect(rest([1, 2, 3]).join(',')).to.equal([2, 3].join(','));
+			expect(rest(['Manoj', 'Kumar', 'Aarav']).join(',')).to.equal(['Kumar', 'Aarav'].join(','));
+		});
+		it('should return empty list if the list is empty', () => {
+			expect(rest([]).length).to.equal(0);
+		});
+		it('should return empty list if the list is null', () => {
+			expect(rest(null).length).to.equal(0);
+			expect(rest(undefined).length).to.equal(0);
+		});
+	});
+	describe('second:', () => {
+		let second = utils.second;
+		it('should return the second element of the given list', () => {
+			expect(second([1, 2, 3])).to.equal(2);
+			expect(second(['Manoj', 'Kumar', 'Aarav'])).to.equal('Kumar');
+		});
+		it('should return null if list is null', () => {
+			expect(second(null)).to.equal(null);
+			expect(second(undefined)).to.equal(null);
+		});
+		it('should return null if list is empty', () => {
+			expect(second([])).to.equal(null);
+		});
+	});
 });

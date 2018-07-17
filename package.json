@@ -4,7 +4,7 @@
   "description": "",
   "main": "transpiler.js",
   "scripts": {
-    "test": "mocha **.spec.js"
+    "test": "mocha **/*.spec.js"
   },
   "keywords": [],
   "author": "",
@@ -18,8 +18,9 @@
   },
   "preferGlobal": true,
   "devDependencies": {
-    "chai-as-promised": "^7.1.1",
     "chai": "^4.1.2",
-    "mocha": "^4.0.1"
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^4.0.1",
+    "nodemon": "^1.18.2"
   }
 }
